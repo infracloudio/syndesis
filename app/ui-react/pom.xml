@@ -72,6 +72,57 @@
             </configuration>
           </execution>
 
+          <execution>
+            <id>yarn-install</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <environmentVariables>
+                <CYPRESS_INSTALL_BINARY>0</CYPRESS_INSTALL_BINARY>
+                <PUPPETEER_SKIP_CHROMIUM_DOWNLOAD>true</PUPPETEER_SKIP_CHROMIUM_DOWNLOAD>
+              </environmentVariables>
+              <arguments>install --force --no-progress --frozen-lockfile ${yarn-install-args} ${yarn-verbose}</arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>yarn-lint</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>lint</arguments>
+              <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>yarn-build</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>build</arguments>
+               <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>yarn-test</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <arguments>test</arguments>
+              <skip>${skipTests}</skip>
+              <yarnInheritsProxyConfigFromMaven>false</yarnInheritsProxyConfigFromMaven>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
