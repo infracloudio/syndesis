@@ -64,7 +64,8 @@
     <module>sftp</module>
     <module>slack</module>
     <module>soap</module>
-    <module>sql</module>
+    <!--<module>sql</module>-->
+    <module>sql2</module>
     <module>telegram</module>
     <module>timer</module>
     <module>twitter</module>

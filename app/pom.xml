@@ -1503,9 +1503,15 @@
         <version>${project.version}</version>
       </dependency>
 
-      <dependency>
+     <!-- <dependency>
         <groupId>io.syndesis.connector</groupId>
         <artifactId>connector-sql</artifactId>
+        <version>${project.version}</version>
+      </dependency>-->
+
+	  <dependency>
+        <groupId>io.syndesis.connector</groupId>
+        <artifactId>connector-sql2</artifactId>
         <version>${project.version}</version>
       </dependency>
 
