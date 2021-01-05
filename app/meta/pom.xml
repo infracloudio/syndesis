@@ -294,7 +294,7 @@
 
     <dependency>
       <groupId>io.syndesis.connector</groupId>
-      <artifactId>connector-sql2</artifactId>
+      <artifactId>connector-sql</artifactId>
       <scope>runtime</scope>
     </dependency>
 

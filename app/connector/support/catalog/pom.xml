@@ -80,14 +80,9 @@
       <artifactId>connector-amqp</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!--<dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>connector-sql</artifactId>
-      <scope>provided</scope>
-    </dependency>-->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>connector-sql2</artifactId>
+      <artifactId>connector-sql</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

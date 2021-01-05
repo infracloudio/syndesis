@@ -261,14 +261,9 @@
         <artifactId>connector-amqp</artifactId>
         <version>${project.version}</version>
       </dependency>
-     <!-- <dependency>
-        <groupId>io.syndesis.connector</groupId>
-        <artifactId>connector-sql</artifactId>
-        <version>${project.version}</version>
-      </dependency>-->
       <dependency>
         <groupId>io.syndesis.connector</groupId>
-        <artifactId>connector-sql2</artifactId>
+        <artifactId>connector-sql</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
