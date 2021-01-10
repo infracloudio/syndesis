@@ -15,6 +15,26 @@
  */
 package io.syndesis.connector.salesforce;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
+import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
+import io.syndesis.common.model.DataShape;
+import io.syndesis.common.model.DataShapeKinds;
+import io.syndesis.common.util.SyndesisServerException;
+import io.syndesis.connector.support.util.ConnectorOptions;
+import io.syndesis.connector.support.verifier.api.ComponentMetadataRetrieval;
+import io.syndesis.connector.support.verifier.api.PropertyPair;
+import io.syndesis.connector.support.verifier.api.SyndesisMetadata;
+import org.apache.camel.CamelContext;
+import org.apache.camel.component.extension.MetaDataExtension.MetaData;
+import org.apache.camel.component.salesforce.SalesforceEndpointConfig;
+import org.apache.camel.component.salesforce.api.SalesforceException;
+import org.apache.camel.component.salesforce.api.utils.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,27 +44,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import io.syndesis.common.model.DataShape;
-import io.syndesis.common.model.DataShapeKinds;
-import io.syndesis.common.util.SyndesisServerException;
-import io.syndesis.connector.support.util.ConnectorOptions;
-import io.syndesis.connector.support.verifier.api.ComponentMetadataRetrieval;
-import io.syndesis.connector.support.verifier.api.PropertyPair;
-import io.syndesis.connector.support.verifier.api.SyndesisMetadata;
-
-import org.apache.camel.CamelContext;
-import org.apache.camel.component.extension.MetaDataExtension.MetaData;
-import org.apache.camel.component.salesforce.SalesforceEndpointConfig;
-import org.apache.camel.component.salesforce.api.SalesforceException;
-import org.apache.camel.component.salesforce.api.utils.JsonUtils;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
-import com.fasterxml.jackson.module.jsonSchema.types.ObjectSchema;
-import com.fasterxml.jackson.module.jsonSchema.types.SimpleTypeSchema;
-
 public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieval {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SalesforceMetadataRetrieval.class);
 
     @Override
     public RuntimeException handle(final Exception e) {
@@ -55,8 +56,9 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
 
         if (current instanceof SalesforceException) {
             final SalesforceException salesforceException = (SalesforceException) current;
-            final String message = salesforceException.getErrors().stream().map(error -> error.getErrorCode() + ": " + error.getMessage())
-                .collect(Collectors.joining(". "));
+            final String message = salesforceException.getErrors().stream()
+                                                      .map(error -> error.getErrorCode() + ": " + error.getMessage())
+                                                      .collect(Collectors.joining(". "));
 
             return new SyndesisServerException("Salesforce: " + message, e);
         }
@@ -70,7 +72,13 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
 
     @Override
     protected SyndesisMetadata adapt(final CamelContext context, final String componentId, final String actionId,
-        final Map<String, Object> properties, final MetaData metadata) {
+                                     final Map<String, Object> properties, final MetaData metadata) {
+        LOGGER.info("componentId: " + componentId);
+        LOGGER.info("actionId: " + actionId);
+        LOGGER.info("properties: " + properties);
+        LOGGER.info("metadata.getAttributes: " + metadata.getAttributes());
+        LOGGER.info("metadata.getPayload: " + metadata.getPayload());
+
         final ObjectSchema schema = schemaPayload(metadata);
 
         Set<ObjectSchema> schemasToConsider;
@@ -78,38 +86,45 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
             schemasToConsider = Collections.singleton(objectSchemaFrom(schema));
         } else {
             schemasToConsider = schema.getOneOf().stream().filter(SalesforceMetadataRetrieval::isObjectSchema)//
-                .map(ObjectSchema.class::cast).collect(Collectors.toSet());
+                                      .map(ObjectSchema.class::cast).collect(Collectors.toSet());
         }
 
         final Map<String, List<PropertyPair>> enrichedProperties = new HashMap<>();
         enrichedProperties.put(SalesforceEndpointConfig.SOBJECT_NAME, schemasToConsider.stream()//
-            .map(SalesforceMetadataRetrieval::nameAndTitlePropertyPairOf).collect(Collectors.toList()));
+                                                                                       .map(
+                                                                                           SalesforceMetadataRetrieval::nameAndTitlePropertyPairOf)
+                                                                                       .collect(Collectors.toList()));
 
         if (isPresent(properties, SalesforceEndpointConfig.SOBJECT_EXT_ID_NAME)) {
             enrichedProperties.put(SalesforceEndpointConfig.SOBJECT_EXT_ID_NAME,
-                schemasToConsider.stream()//
-                    .flatMap(s -> s.getProperties().entrySet().stream()).filter(e -> isIdLookup(e.getValue()))//
-                    .map(SalesforceMetadataRetrieval::createFieldPairPropertyFromSchemaEntry).collect(Collectors.toList()));
+                                   schemasToConsider.stream()//
+                                                    .flatMap(s -> s.getProperties().entrySet().stream())
+                                                    .filter(e -> isIdLookup(e.getValue()))//
+                                                    .map(
+                                                        SalesforceMetadataRetrieval::createFieldPairPropertyFromSchemaEntry)
+                                                    .collect(Collectors.toList()));
         }
 
         if (isPresentAndNonNull(properties, SalesforceEndpointConfig.SOBJECT_NAME)) {
             try {
-                final String objectName = ConnectorOptions.extractOption(properties, SalesforceEndpointConfig.SOBJECT_NAME);
+                final String objectName = ConnectorOptions
+                    .extractOption(properties, SalesforceEndpointConfig.SOBJECT_NAME);
                 final ObjectSchema inputOutputSchema = inputOutputSchemaFor(schemasToConsider, objectName);
-                final String specification = io.syndesis.common.util.json.JsonUtils.writer().writeValueAsString(inputOutputSchema);
+                final String specification = io.syndesis.common.util.json.JsonUtils.writer().writeValueAsString(
+                    inputOutputSchema);
 
                 return new SyndesisMetadata(//
-                    enrichedProperties, //
-                    new DataShape.Builder().kind(DataShapeKinds.JSON_SCHEMA)//
-                        .type(inputOutputSchema.getTitle())//
-                        .name("Salesforce " + objectName)//
-                        .description("Salesforce " + objectName)//
-                        .specification(specification).build(), //
-                    new DataShape.Builder().kind(DataShapeKinds.JSON_SCHEMA)//
-                        .type(inputOutputSchema.getTitle())//
-                        .name("Salesforce " + objectName)//
-                        .description("Salesforce " + objectName)//
-                        .specification(specification).build());
+                                            enrichedProperties, //
+                                            new DataShape.Builder().kind(DataShapeKinds.JSON_SCHEMA)//
+                                                                   .type(inputOutputSchema.getTitle())//
+                                                                   .name("Salesforce " + objectName)//
+                                                                   .description("Salesforce " + objectName)//
+                                                                   .specification(specification).build(), //
+                                            new DataShape.Builder().kind(DataShapeKinds.JSON_SCHEMA)//
+                                                                   .type(inputOutputSchema.getTitle())//
+                                                                   .name("Salesforce " + objectName)//
+                                                                   .description("Salesforce " + objectName)//
+                                                                   .specification(specification).build());
             } catch (final JsonProcessingException e) {
                 throw new IllegalStateException(e);
             }
@@ -202,8 +217,9 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
         }
 
         return (ObjectSchema) schema.getOneOf().stream().filter(ObjectSchema.class::isInstance)
-            .filter(SalesforceMetadataRetrieval::isObjectSchema).findFirst().orElseThrow(
-                () -> new IllegalStateException("The resulting schema does not contain an non query records object schema in `oneOf`"));
+                                    .filter(SalesforceMetadataRetrieval::isObjectSchema).findFirst().orElseThrow(
+                () -> new IllegalStateException(
+                    "The resulting schema does not contain an non query records object schema in `oneOf`"));
     }
 
     static ObjectSchema schemaPayload(final MetaData metadata) {
