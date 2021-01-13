@@ -24,23 +24,32 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.component.salesforce.SalesforceEndpointConfig;
 import org.apache.camel.model.language.ConstantExpression;
 import org.apache.camel.processor.Enricher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SalesforceStreamingConnectorFactory implements ComponentProxyFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SalesforceStreamingConnectorFactory.class);
+
     @Override
     public ComponentProxyComponent newInstance(String componentId, String componentScheme) {
+        LOGGER.info("Entered...");
         return new SalesforceStreamingConnector(componentId, componentScheme);
     }
 
     private static class SalesforceStreamingConnector extends ComponentProxyComponent {
+        private static final Logger LOGGER = LoggerFactory.getLogger(SalesforceStreamingConnector.class);
+
         SalesforceStreamingConnector(String componentId, String componentScheme) {
             super(componentId, componentScheme);
         }
 
         @Override
         protected Endpoint createDelegateEndpoint(ComponentDefinition definition, String scheme, Map<String, String> options) {
+            LOGGER.info("Entered...");
             final String sObjectName = options.get(SalesforceEndpointConfig.SOBJECT_NAME);
             final String query = "SELECT Id FROM " + sObjectName;
             final String topicName = SalesforceUtil.topicNameFor(options);
+            LOGGER.info("topic name: " + topicName);
 
             options.put("topicName", topicName);
             options.put(SalesforceEndpointConfig.SOBJECT_QUERY, query);

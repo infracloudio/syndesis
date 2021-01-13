@@ -16,10 +16,14 @@
 package io.syndesis.connector.salesforce;
 
 import io.syndesis.connector.support.verifier.api.ComponentVerifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SalesforceVerifier extends ComponentVerifier {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SalesforceVerifier.class);
 
     public SalesforceVerifier() {
         super("salesforce");
+        LOGGER.info("Entered...");
     }
 }

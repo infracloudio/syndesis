@@ -48,6 +48,9 @@ import org.apache.camel.util.function.Predicates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 @SuppressWarnings("PMD.GodClass")
 public class ComponentProxyComponent extends DefaultComponent {
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentProxyComponent.class);
@@ -88,6 +91,7 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     public ComponentProxyComponent(String componentId, String componentScheme, String componentClass, CamelCatalog catalog) {
+        LOGGER.info("Entered...");
         this.componentId = StringHelper.notEmpty(componentId, "componentId");
         this.componentScheme = StringHelper.notEmpty(componentScheme, "componentScheme");
         this.componentSchemeAlias = Optional.empty();
@@ -109,6 +113,8 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     public void setOptions(Map<String, Object> options) {
+        LOGGER.info("Entered...");
+        LOGGER.info("options: " + options);
         this.configuredOptions.clear();
 
         if (ObjectHelper.isNotEmpty(options)) {
@@ -127,11 +133,17 @@ public class ComponentProxyComponent extends DefaultComponent {
      * @return definition
      */
     protected ComponentDefinition getDefinition() {
+        LOGGER.info("Entered...");
         return definition;
     }
 
     @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) {
+        LOGGER.info("Entered...");
+        LOGGER.info("uri: " + uri);
+        LOGGER.info("remaining: " + remaining);
+        LOGGER.info("parameters: " + parameters);
+
         // merge parameters
         final Map<String, Object> options = new HashMap<>();
         doAddOptions(options, this.remainingOptions);
@@ -169,6 +181,7 @@ public class ComponentProxyComponent extends DefaultComponent {
 
     @Override
     protected void doStart() throws Exception {
+        LOGGER.info("Entered...");
         this.remainingOptions.clear();
         this.remainingOptions.putAll(this.configuredOptions);
 
@@ -221,6 +234,7 @@ public class ComponentProxyComponent extends DefaultComponent {
 
     @Override
     protected void doStop() throws Exception {
+        LOGGER.info("Entered...");
         if (componentSchemeAlias.isPresent()) {
             LOGGER.debug("Stopping component: {}", componentSchemeAlias.get());
             getCamelContext().removeComponent(componentSchemeAlias.get());
@@ -283,6 +297,7 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     protected Optional<Component> createDelegateComponent(ComponentDefinition definition, Map<String, Object> options) {
+        LOGGER.info("Entered...");
         final String componentClass = definition.getComponent().getJavaType();
 
         // configure component with extra options
@@ -317,6 +332,7 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     protected void configureDelegateComponent(ComponentDefinition definition, Component component, Map<String, Object> options) {
+        LOGGER.info("Entered...");
         final CamelContext context = getCamelContext();
         final List<Map.Entry<String, Object>> entries = new ArrayList<>();
 
@@ -365,6 +381,8 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     protected Endpoint createDelegateEndpoint(ComponentDefinition definition, String scheme, Map<String, String> options) {
+        LOGGER.info("Entered...");
+
         // Build the delegate uri using the catalog
         final String uri;
         try {
@@ -377,10 +395,14 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     protected void configureDelegateEndpoint(ComponentDefinition definition, Endpoint endpoint, Map<String, Object> options) {
+        LOGGER.info("Entered...");
+
         // no-op
     }
 
     protected Map<String, String> buildEndpointOptions(String remaining, Map<String, Object> options) {
+        LOGGER.info("Entered...");
+
         final TypeConverter converter = getCamelContext().getTypeConverter();
         final Map<String, String> endpointOptions = new LinkedHashMap<>();
 
@@ -434,10 +456,14 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     protected Object getOption(String key) {
+        LOGGER.info("Entered...");
+
         return configuredOptions.get(key);
     }
 
     protected CamelCatalog getCatalog() {
+        LOGGER.info("Entered...");
+
         return catalog;
     }
 
@@ -447,6 +473,7 @@ public class ComponentProxyComponent extends DefaultComponent {
 
     @Override
     public Collection<Class<? extends ComponentExtension>> getSupportedExtensions() {
+        LOGGER.info("Entered...");
         Set<Class<? extends ComponentExtension>> extensions = new HashSet<>();
         extensions.addAll(super.getSupportedExtensions());
         extensions.addAll(getCamelContext().getComponent(componentScheme, true, false).getSupportedExtensions())   ;
@@ -456,6 +483,8 @@ public class ComponentProxyComponent extends DefaultComponent {
 
     @Override
     public <T extends ComponentExtension> Optional<T> getExtension(Class<T> extensionType) {
+        LOGGER.info("Entered...");
+
         // first try to grab extensions from component proxy
         Optional<T> extension = super.getExtension(extensionType);
 
@@ -468,9 +497,13 @@ public class ComponentProxyComponent extends DefaultComponent {
     }
 
     protected final String createEndpointUriFor(final String scheme, final Map<String, String> options) {
+        LOGGER.info("Entered...");
+        LOGGER.info("scheme: " + scheme);
+        LOGGER.info("options: " + options);
         final String uri;
         try {
             uri = catalog.asEndpointUri(scheme, options, false);
+            LOGGER.info("uri: " + uri);
         } catch (final URISyntaxException e) {
             throw new IllegalArgumentException("Unable to create endpoint url for scheme: " + scheme + ", and options: " + options, e);
         }

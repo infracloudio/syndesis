@@ -29,8 +29,12 @@ import org.apache.camel.CamelContextAware;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.processor.Pipeline;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataShapeCustomizer implements ComponentProxyCustomizer, CamelContextAware, DataShapeAware {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataShapeCustomizer.class);
+
     private CamelContext camelContext;
     private DataShape inputDataShape;
     private DataShape outputDataShape;
@@ -67,6 +71,7 @@ public class DataShapeCustomizer implements ComponentProxyCustomizer, CamelConte
 
     @Override
     public void customize(ComponentProxyComponent component, Map<String, Object> options) {
+        LOGGER.info("Entered...");
         if (inputDataShape != null) {
             Processor processor = new UnmarshallProcessor(inputDataShape);
             Processor pipeline = Pipeline.newInstance(this.camelContext, processor, component.getBeforeProducer());

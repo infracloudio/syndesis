@@ -49,6 +49,7 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
 
     @Override
     public RuntimeException handle(final Exception e) {
+        LOGGER.info("Entered...");
         Throwable current = e;
         while (current != null && current != current.getCause() && !(current instanceof SalesforceException)) {
             current = current.getCause();
@@ -73,6 +74,7 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
     @Override
     protected SyndesisMetadata adapt(final CamelContext context, final String componentId, final String actionId,
                                      final Map<String, Object> properties, final MetaData metadata) {
+        LOGGER.info("Entered...");
         LOGGER.info("componentId: " + componentId);
         LOGGER.info("actionId: " + actionId);
         LOGGER.info("properties: " + properties);
@@ -88,6 +90,7 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
             schemasToConsider = schema.getOneOf().stream().filter(SalesforceMetadataRetrieval::isObjectSchema)//
                                       .map(ObjectSchema.class::cast).collect(Collectors.toSet());
         }
+        LOGGER.info("schemasToConsider: " + schemasToConsider);
 
         final Map<String, List<PropertyPair>> enrichedProperties = new HashMap<>();
         enrichedProperties.put(SalesforceEndpointConfig.SOBJECT_NAME, schemasToConsider.stream()//
@@ -134,12 +137,15 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
     }
 
     static ObjectSchema adaptSchema(final ObjectSchema schema) {
+        LOGGER.info("Entered...");
         schema.set$schema(JsonUtils.SCHEMA4);
 
         return schema;
     }
 
     static ObjectSchema convertSalesforceGlobalObjectJsonToSchema(final JsonNode payload) {
+        LOGGER.info("Entered...");
+        LOGGER.info("payload: " + payload);
         final Set<Object> allSchemas = new HashSet<>();
 
         for (final JsonNode sobject : payload) {

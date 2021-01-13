@@ -22,10 +22,15 @@ import io.syndesis.integration.component.proxy.ComponentProxyComponent;
 import io.syndesis.integration.component.proxy.ComponentProxyCustomizer;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExpectingIdCustomizer implements ComponentProxyCustomizer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExpectingIdCustomizer.class);
+
     @Override
     public void customize(ComponentProxyComponent component, Map<String, Object> options) {
+        LOGGER.info("Entered...");
         component.setBeforeProducer(this::beforeProducer);
     }
 

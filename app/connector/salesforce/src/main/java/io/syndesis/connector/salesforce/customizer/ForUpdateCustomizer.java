@@ -30,19 +30,24 @@ import org.apache.camel.component.salesforce.api.SalesforceException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ForUpdateCustomizer implements ComponentProxyCustomizer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ForUpdateCustomizer.class);
 
     private String idPropertyName;
 
     @Override
     public void customize(ComponentProxyComponent component, Map<String, Object> options) {
+        LOGGER.info("Entered...");
         idPropertyName = ConnectorOptions.extractOption(options, SalesforceEndpointConfig.SOBJECT_EXT_ID_NAME, "Id");
 
         component.setBeforeProducer(this::beforeProducer);
     }
 
     public void beforeProducer(final Exchange exchange) throws IOException {
+        LOGGER.info("Entered...");
         // parse input json and extract Id field
         final Message in = exchange.getIn();
         final String body = in.getBody(String.class);
