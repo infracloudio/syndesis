@@ -48,9 +48,6 @@ import org.apache.camel.util.function.Predicates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 @SuppressWarnings("PMD.GodClass")
 public class ComponentProxyComponent extends DefaultComponent {
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentProxyComponent.class);
