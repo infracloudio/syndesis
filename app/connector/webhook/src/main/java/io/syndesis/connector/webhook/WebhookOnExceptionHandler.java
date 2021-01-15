@@ -50,6 +50,8 @@ public class WebhookOnExceptionHandler implements Processor, Properties {
         } else {
             exchange.getOut().setBody("");
         }
+        LOGGER.info("isReturnBody: " + isReturnBody);
+        LOGGER.info("statusInfo.getHttpResponseCode(): " + statusInfo.getHttpResponseCode());
         LOGGER.info("Error response: " + statusInfo.getMessage());
     }
 

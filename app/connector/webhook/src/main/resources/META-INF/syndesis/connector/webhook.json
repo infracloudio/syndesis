@@ -2,7 +2,7 @@
   "actions": [
     {
       "actionType": "connector",
-      "description": "Start an integration from a Webhook",
+      "description": "Start an integration from a Webhook (ensure modification)",
       "descriptor": {
         "componentScheme": "servlet",
         "standardizedErrors": [

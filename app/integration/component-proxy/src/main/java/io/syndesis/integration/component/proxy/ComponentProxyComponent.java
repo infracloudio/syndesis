@@ -555,8 +555,8 @@ public class ComponentProxyComponent extends DefaultComponent {
         } catch (Exception e) {
             return (scope, map) -> {
                 return ResultBuilder.withStatusAndScope(ComponentVerifierExtension.Result.Status.OK, scope)
-                    .error(ResultErrorBuilder.withException(e).build())
-                    .build();
+                                    .error(ResultErrorBuilder.withException(e).build())
+                                    .build();
             };
         }
     }

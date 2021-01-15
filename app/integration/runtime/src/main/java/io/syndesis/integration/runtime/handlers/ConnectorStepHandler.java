@@ -159,12 +159,15 @@ public class ConnectorStepHandler implements IntegrationStepHandler, Integration
 
     private static ComponentProxyComponent resolveComponent(String componentId, String componentScheme, CamelContext context, Connector connector, ConnectorDescriptor descriptor) {
         ComponentProxyFactory factory = ComponentProxyComponent::new;
-
+        LOGGER.info("component id: " + componentId + ", component schema: " + componentScheme);
         if (descriptor.getConnectorFactory().isPresent()) {
+            LOGGER.info("descriptor.getConnectorFactory().isPresent(): " + descriptor.getConnectorFactory().isPresent());
             factory = resolveComponentProxyFactory(context, descriptor.getConnectorFactory()).orElse(factory);
         } else if (connector.getConnectorFactory().isPresent()) {
+            LOGGER.info("connector.getConnectorFactory().isPresent(): " + connector.getConnectorFactory().isPresent());
             factory = resolveComponentProxyFactory(context, connector.getConnectorFactory()).orElse(factory);
         }
+        LOGGER.info("factory: " + factory);
 
         return factory.newInstance(componentId, componentScheme);
     }
