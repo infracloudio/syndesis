@@ -90,7 +90,7 @@ public final class SalesforceMetadataRetrieval extends ComponentMetadataRetrieva
             schemasToConsider = schema.getOneOf().stream().filter(SalesforceMetadataRetrieval::isObjectSchema)//
                                       .map(ObjectSchema.class::cast).collect(Collectors.toSet());
         }
-        LOGGER.info("schemasToConsider: " + schemasToConsider);
+//        LOGGER.info("schemasToConsider: " + schemasToConsider);
 
         final Map<String, List<PropertyPair>> enrichedProperties = new HashMap<>();
         enrichedProperties.put(SalesforceEndpointConfig.SOBJECT_NAME, schemasToConsider.stream()//
