@@ -173,6 +173,12 @@
       "description": "Fetches a record from Salesforce by its identifier value.",
       "descriptor": {
         "componentScheme": "salesforce",
+        "standardizedErrors": [
+          {
+            "name": "SERVER_ERROR",
+            "displayName": "ServerError"
+          }
+        ],
         "configuredProperties": {
           "operationName": "getSObject",
           "rawPayload": "true"
