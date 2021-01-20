@@ -38,6 +38,6 @@ public class SalesforceOnExceptionHandler implements Processor, Properties {
 
     @Override
     public void setProperties(Map<String, String> configuredProperties) {
-        LOGGER.info("configuredProperties: " + configuredProperties);
+        LOGGER.info("configuredProperties: " + configuredProperties != null ? configuredProperties.toString() : "null");
     }
 }
