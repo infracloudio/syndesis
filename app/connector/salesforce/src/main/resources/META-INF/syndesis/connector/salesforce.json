@@ -187,7 +187,6 @@
           "io.syndesis.connector.salesforce.customizer.ExpectingIdCustomizer",
           "io.syndesis.connector.salesforce.customizer.DataShapeCustomizer"
         ],
-        "connectorFactory": "io.syndesis.connector.salesforce.SalesforceFetchConnectorFactory",
         "exceptionHandler": "io.syndesis.connector.salesforce.SalesforceOnExceptionHandler",
         "inputDataShape": {
           "kind": "java",
