@@ -45,6 +45,7 @@ public class WebhookOnExceptionHandler implements Processor, Properties {
                 ErrorMapper.mapError(exchange.getException(), errorResponseCodeMappings, httpResponseStatus);
         exchange.getOut().removeHeaders("*");
         exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, statusInfo.getHttpResponseCode());
+        LOGGER.info("isReturnBody: " + isReturnBody);
         if (isReturnBody) {
             exchange.getOut().setBody(statusInfo.toJson());
             exchange.getIn().setBody("Setting IN body in if: " + statusInfo.toJson());
@@ -52,7 +53,6 @@ public class WebhookOnExceptionHandler implements Processor, Properties {
             exchange.getOut().setBody("");
             exchange.getIn().setBody("Setting IN body in else: " + statusInfo.toJson());
         }
-        LOGGER.info("isReturnBody: " + isReturnBody);
         LOGGER.info("statusInfo.getHttpResponseCode(): " + statusInfo.getHttpResponseCode());
         LOGGER.info("Error response: " + statusInfo.getMessage());
     }
