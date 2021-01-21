@@ -47,8 +47,10 @@ public class WebhookOnExceptionHandler implements Processor, Properties {
         exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, statusInfo.getHttpResponseCode());
         if (isReturnBody) {
             exchange.getOut().setBody(statusInfo.toJson());
+            exchange.getIn().setBody("Setting IN body in if: " + statusInfo.toJson());
         } else {
             exchange.getOut().setBody("");
+            exchange.getIn().setBody("Setting IN body in else: " + statusInfo.toJson());
         }
         LOGGER.info("isReturnBody: " + isReturnBody);
         LOGGER.info("statusInfo.getHttpResponseCode(): " + statusInfo.getHttpResponseCode());
