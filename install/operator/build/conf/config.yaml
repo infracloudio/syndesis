@@ -39,9 +39,9 @@ Syndesis:
             Image: "quay.io/openshift/origin-oauth-proxy:v4.0.0"
             DisableSarCheck: false
         UI:
-            Image: "docker.io/syndesis/syndesis-ui:latest"
+            Image: "image-registry.openshift-image-registry.svc:5000/syndesis/syndesis-ui:1.10.0"
         S2I:
-            Image: "docker.io/syndesis/syndesis-s2i:latest"
+            Image: "image-registry.openshift-image-registry.svc:5000/syndesis/syndesis-s2i:1.10.0"
         Prometheus:
             Rules: ""
             Image: "docker.io/prom/prometheus:v2.1.0"
@@ -53,7 +53,7 @@ Syndesis:
             Resources:
                 VolumeCapacity: "1Gi"
         Meta:
-            Image: "docker.io/syndesis/syndesis-meta:latest"
+            Image: "image-registry.openshift-image-registry.svc:5000/syndesis/syndesis-meta:1.10.0"
             Resources:
                 Memory: "512Mi"
                 VolumeCapacity: "1Gi"
@@ -69,7 +69,7 @@ Syndesis:
                 VolumeCapacity: "1Gi"
                 VolumeAccessMode: "ReadWriteOnce"
         Server:
-            Image: "docker.io/syndesis/syndesis-server:latest"
+            Image: "image-registry.openshift-image-registry.svc:5000/syndesis/syndesis-server:1.10.0"
             Resources:
                 Memory: "800Mi"
             Features:
